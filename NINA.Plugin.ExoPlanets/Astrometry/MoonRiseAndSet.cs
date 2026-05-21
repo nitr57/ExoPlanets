@@ -1,7 +1,7 @@
 #region "copyright"
 
 /*
-    Copyright © 2016 - 2021 Stefan Berg <isbeorn86+NINA@googlemail.com> and the N.I.N.A. contributors
+    Copyright ï¿½ 2016 - 2021 Stefan Berg <isbeorn86+NINA@googlemail.com> and the N.I.N.A. contributors
 
     This file is part of N.I.N.A. - Nighttime Imaging 'N' Astronomy.
 
@@ -41,16 +41,16 @@ namespace NINA.Plugin.ExoPlanets.RiseAndSet {
             return new Moon(date, Latitude, Longitude);
         }
 
-        public async Task<List<DataPoint>> CalculateTransitAsync(DateTime start) {
+        public Task<List<DataPoint>> CalculateTransitAsync(DateTime start) {
             var _transit = new List<DataPoint>();
             DateTime time = start;
             for (int i = 1; i <= 240; i++) {
                 BasicBody moon = GetBody(time);
-                await moon.Calculate();
+                moon.Calculate();
                 _transit.Add(new DataPoint(DateTimeAxis.ToDouble(time), AdjustAltitude(moon)));
                 time = time.AddHours(0.1d);
             }
-            return _transit;
+            return Task.FromResult(_transit);
         }
     }
 }

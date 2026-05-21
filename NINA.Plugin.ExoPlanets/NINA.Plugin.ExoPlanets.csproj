@@ -1,36 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <OutputType>Library</OutputType>
     <AssemblyName>ExoPlanets</AssemblyName>
+    <Version>2.2.1.0</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <UseWPF>true</UseWPF>
-    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <DefaultItemExcludes Condition="$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))">$(DefaultItemExcludes);**/*.xaml.cs;**/*.xaml</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NINA.Plugin" Version="3.1.2.9001" />
+    <ProjectReference Include="..\..\..\NINA.Plugin\NINA.Plugin.csproj" />
+    <ProjectReference Include="..\..\..\System.Windows.Compat\System.Windows.Compat.csproj" />
+    <!-- Exclude System.Drawing.Common as it conflicts with our compat library -->
+    <PackageReference Include="System.Drawing.Common" Version="*" ExcludeAssets="all" />
   </ItemGroup>
   <PropertyGroup />
   <ItemGroup>
@@ -50,6 +34,8 @@
     </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if not exist &quot;%25localappdata%25\NINA\Plugins&quot; (&#xD;&#xA;   echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xD;&#xA;   mkdir  &quot;%25localappdata%25\NINA\Plugins&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot; (&#xD;&#xA;   echo &quot;Creating $(PlatformName) Plugins folder&quot;&#xD;&#xA;   mkdir  &quot;%25localappdata%25\NINA\Plugins\3.0.0&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;if not exist &quot;%25localappdata%25\NINA\Plugin\3.0.0\$(TargetName)&quot; (&#xD;&#xA;   echo &quot;Creating $(PlatformName) Plugins $(TargetName) folder&quot;&#xD;&#xA;   mkdir  &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;echo &quot;Copying $(PlatformName) $(TargetFileName)&quot;&#xD;&#xA;xcopy &quot;$(TargetPath)&quot; &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)&quot; /h/i/c/k/e/r/y&#xD;&#xA;copy &quot;$(ProjectDir)\resources\pandora*.csv&quot; &quot;%25localappdata%25\NINA\Plugins\3.0.0\$(TargetName)\&quot;" />
+    <Exec Command="mkdir -p $HOME/.local/share/NINA/Plugins/3.0.0/ExoPlanets" />
+    <Exec Command="cp $(TargetPath) $HOME/.local/share/NINA/Plugins/3.0.0/ExoPlanets/" />
+    <Exec Command="cp $(MSBuildProjectDirectory)/resources/pandora*.csv $HOME/.local/share/NINA/Plugins/3.0.0/ExoPlanets/" />
   </Target>
 </Project>
